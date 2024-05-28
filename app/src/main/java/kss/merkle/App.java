@@ -20,6 +20,8 @@ public class App {
         List<String> randomHexStrings = IntStream.generate(() -> rand.nextInt(Integer.MAX_VALUE)).limit(treeSize)
                 .mapToObj(i -> String.format("0x%08x", i)).toList();
 
+        System.out.printf("Generating Merkle Tree using %d chunks of random hex Strings!\n", treeSize);
+
         MerkleTree tree = MerkleTree.fromList(randomHexStrings);
         System.out.println(tree);
     }
