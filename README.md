@@ -1,2 +1,4 @@
 # merkle-tree
-Simple implementationb of Merkle Tree in Java
+Simple implementation of Merkle Tree in Java
+
+Run with `./gradlew run`
