@@ -16,18 +16,18 @@ public class MerkleTree {
     public static MerkleTree fromList(List<String> items) {
         if (!isPowerOfTwo(items.size())) throw new InvalidParameterException("Incorrect number of items");
 
-        return new MerkleTree(createNode(items), items.size());
+        return new MerkleTree(createNode(items, 0), items.size());
     }
 
-    private static MerkleNode createNode(List<String> items) {
+    private static MerkleNode createNode(List<String> items, Integer depth) {
         if (items.size() == 1) {
-            return new MerkleLeaf(items.stream().findFirst().get());
+            return new MerkleLeaf(items.stream().findFirst().get(), depth);
         } else {
             var divided = Lists.partition(items, items.size() / 2);
-            var left = createNode(divided.getFirst());
-            var right = createNode(divided.getLast());
+            var left = createNode(divided.getFirst(), depth + 1);
+            var right = createNode(divided.getLast(), depth + 1);
 
-            return new MerkleNode(left, right);
+            return new MerkleNode(left, right, depth);
         }
     }
 
