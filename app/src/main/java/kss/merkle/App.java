@@ -3,26 +3,33 @@
  */
 package kss.merkle;
 
+import kss.merkle.exception.MerkleException;
 import kss.merkle.model.MerkleTree;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
-        final var treeSize = 32;
+        final var treeSize = 111;
         Random rand = new Random();
         List<String> randomHexStrings = IntStream.generate(() -> rand.nextInt(Integer.MAX_VALUE)).limit(treeSize)
                 .mapToObj(i -> String.format("0x%08x", i)).toList();
 
-        System.out.printf("Generating Merkle Tree using %d chunks of random hex Strings!\n", treeSize);
+        log.info(String.format("Generating Merkle Tree using %d chunks of random hex Strings!\n", treeSize));
 
-        MerkleTree tree = MerkleTree.fromList(randomHexStrings);
-        System.out.println(tree);
+        try {
+            MerkleTree tree = MerkleTree.fromList(randomHexStrings);
+            System.out.println(tree);
+        } catch (MerkleException e) {
+            log.error("Creating Merkle Tree failed!", e);
+        }
     }
 }

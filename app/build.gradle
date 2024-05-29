@@ -24,9 +24,11 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
     testCompileOnly 'org.projectlombok:lombok:1.18.32'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.13'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

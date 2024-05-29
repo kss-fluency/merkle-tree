@@ -2,10 +2,10 @@ package kss.merkle.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
+import kss.merkle.exception.MerkleException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -13,8 +13,10 @@ public class MerkleTree {
     private MerkleNode root;
     private Integer size;
 
-    public static MerkleTree fromList(List<String> items) {
-        if (!isPowerOfTwo(items.size())) throw new InvalidParameterException("Incorrect number of items");
+    public static MerkleTree fromList(List<String> items) throws MerkleException {
+        if (!isPowerOfTwo(items.size())) {
+            throw new MerkleException(String.format("Merkle Tree can only be built using n^2 items but you provided %d", items.size()));
+        }
 
         return new MerkleTree(createNode(items, 0), items.size());
     }
@@ -37,7 +39,7 @@ public class MerkleTree {
 
     @Override
     public String toString() {
-        return String.format("MerkleTree{ size=%d rootHash=%s }\n",
+        return String.format("MerkleTree{ size=[%d] rootHash=[%s] }\n",
                 size, BaseEncoding.base16().lowerCase().encode(root.hash)) + root;
     }
 }

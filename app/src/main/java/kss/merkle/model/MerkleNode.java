@@ -29,7 +29,7 @@ public class MerkleNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("--".repeat(Math.max(0, depth)));
-        sb.append(String.format("MerkleNode{ hash=%s }\n", BaseEncoding.base16().lowerCase().encode(hash)));
+        sb.append(String.format("MerkleNode{ hash=[%s] }\n", BaseEncoding.base16().lowerCase().encode(hash)));
         if (left != null) sb.append(left);
         if (right != null) sb.append(right);
 

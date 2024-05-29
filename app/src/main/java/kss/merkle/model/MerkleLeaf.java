@@ -18,6 +18,6 @@ public class MerkleLeaf extends MerkleNode {
     @Override
     public String toString() {
         return "--".repeat(Math.max(0, depth)) +
-                String.format("MerkleLeaf{ hash=%s data=%s }\n", BaseEncoding.base16().lowerCase().encode(hash), data);
+                String.format("MerkleLeaf{ hash=[%s] data=[%s] }\n", BaseEncoding.base16().lowerCase().encode(hash), data);
     }
 }
