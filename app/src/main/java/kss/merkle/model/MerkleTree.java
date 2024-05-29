@@ -8,8 +8,7 @@ import kss.merkle.exception.MerkleException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MerkleTree {
@@ -27,12 +26,43 @@ public class MerkleTree {
     public boolean verifyProof(String item, List<MerkleProofItem> proof) {
         byte[] itemHash = Sha256Hasher.hash(item.getBytes());
 
-        byte[] calculatedRootHash = recursiveGenerateProof(root, itemHash, proof);
+        byte[] calculatedRootHash = recursiveVerifyProof(root, itemHash, proof);
 
         return Arrays.equals(calculatedRootHash, root.hash);
     }
 
-    private byte[] recursiveGenerateProof(MerkleNode item, byte[] itemHash, List<MerkleProofItem> hashes) {
+    public List<MerkleProofItem> generateProof(String item) throws MerkleException {
+        byte[] itemHash = Sha256Hasher.hash(item.getBytes());
+
+        Optional<List<MerkleProofItem>> proof = recursiveGenerateProof(root, itemHash, Collections.emptyList());
+        if (proof.isEmpty()) {
+            throw new MerkleException("Item not found in the tree");
+        }
+
+        return proof.get();
+    }
+
+    private Optional<List<MerkleProofItem>> recursiveGenerateProof(MerkleNode node, byte[] itemHash, List<MerkleProofItem> proof) {
+        if (node instanceof MerkleLeaf) {
+            if (Arrays.equals(node.getHash(), itemHash)) {
+                return Optional.of(proof);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            List<MerkleProofItem> leftProof = new ArrayList<>(proof);
+            leftProof.addFirst(new MerkleProofItem.Right(node.getRight().hash));
+            Optional<List<MerkleProofItem>> left = recursiveGenerateProof(node.getLeft(), itemHash, leftProof);
+
+            List<MerkleProofItem> rightProof = new ArrayList<>(proof);
+            rightProof.addFirst(new MerkleProofItem.Left(node.getLeft().hash));
+            Optional<List<MerkleProofItem>> right = recursiveGenerateProof(node.getRight(), itemHash, rightProof);
+
+            return left.isPresent() ? left : right;
+        }
+    }
+
+    private byte[] recursiveVerifyProof(MerkleNode item, byte[] itemHash, List<MerkleProofItem> hashes) {
         byte[] result = null;
 
         if (item instanceof MerkleLeaf) {
@@ -43,9 +73,9 @@ public class MerkleTree {
             MerkleProofItem firstProofItem = hashes.removeFirst();
 
             if (firstProofItem instanceof MerkleProofItem.Left l) {
-                result = Sha256Hasher.hash(Bytes.concat(l.getHash(), recursiveGenerateProof(item.getRight(), itemHash, hashes)));
+                result = Sha256Hasher.hash(Bytes.concat(l.getHash(), recursiveVerifyProof(item.getRight(), itemHash, hashes)));
             } else if (firstProofItem instanceof MerkleProofItem.Right r) {
-                result = Sha256Hasher.hash(Bytes.concat(recursiveGenerateProof(item.getLeft(), itemHash, hashes), r.getHash()));
+                result = Sha256Hasher.hash(Bytes.concat(recursiveVerifyProof(item.getLeft(), itemHash, hashes), r.getHash()));
             }
         }
 
