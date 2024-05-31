@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class MerkleTreeTest {
+public class MerkleTreeComponentTest {
 
     private final static List<String> TREE_DATA = List.of(
             "0x61b7209e", "0x7b7e1b8b", "0x62ab3c0f", "0x72c04a10",
