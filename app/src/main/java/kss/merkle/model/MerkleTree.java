@@ -67,7 +67,7 @@ public class MerkleTree {
     }
 
     private byte[] recursiveVerifyProof(MerkleNode item, byte[] itemHash, List<MerkleProofItem> hashes) {
-        byte[] result = null;
+        byte[] result = new byte[0];
 
         if (item instanceof MerkleLeaf) {
             if (Arrays.equals(item.getHash(), itemHash)) {

@@ -34,7 +34,7 @@ public class App {
             List<MerkleProofItem> proof = tree.generateProof(item);
             System.out.println("Proof: " + proof);
 
-//            System.out.println("Proof verified: " + tree.verifyProof(item, proof));
+            System.out.println("Proof verified: " + tree.verifyProof(item, proof));
         } catch (MerkleException e) {
             log.error("Creating Merkle Tree failed!", e);
         }
