@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 public class MerkleLeaf extends MerkleNode {
     private final String data;
-    private final Integer depth;
 
     public MerkleLeaf(String data, Integer depth, Hasher hasher) {
         super(hasher);

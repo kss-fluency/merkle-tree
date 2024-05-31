@@ -13,8 +13,8 @@ public class MerkleNode {
     private MerkleNode left;
     @Setter
     private MerkleNode right;
-    private Integer depth;
 
+    protected Integer depth;
     protected final Hasher hasher;
 
     public MerkleNode(Hasher hasher) {
