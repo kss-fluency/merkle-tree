@@ -40,7 +40,7 @@ public class App {
             List<MerkleProofItem> newProof = tree.generateProof(newRandomHexString);
             System.out.println("Verify proof for new item: " + tree.verifyProof(newRandomHexString, newProof));
         } catch (MerkleException e) {
-            log.error("Creating Merkle Tree failed!", e);
+            log.error("There was an oopsie!", e);
         }
     }
 }
