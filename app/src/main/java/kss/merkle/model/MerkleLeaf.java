@@ -2,19 +2,23 @@ package kss.merkle.model;
 
 import com.google.common.io.BaseEncoding;
 import kss.merkle.crypto.Hasher;
+import kss.merkle.exception.MerkleException;
 import lombok.Getter;
 
 @Getter
 public class MerkleLeaf extends MerkleNode {
     private String data;
 
-    public MerkleLeaf(String data, Integer depth, Hasher hasher) {
+    public MerkleLeaf(String data, Integer depth, Hasher hasher) throws MerkleException {
         super(hasher);
         this.depth = depth;
         updateData(data);
     }
 
-    public void updateData(String data) {
+    public void updateData(String data) throws MerkleException {
+        if (data == null) {
+            throw new MerkleException("Leaf data must not be null");
+        }
         this.data = data;
         this.hash = hasher.hash(data.getBytes());
     }

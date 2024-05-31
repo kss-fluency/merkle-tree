@@ -140,7 +140,7 @@ public class MerkleTree {
         }
     }
 
-    private static MerkleNode createNode(List<String> items, Integer depth) {
+    private static MerkleNode createNode(List<String> items, Integer depth) throws MerkleException {
         if (items.size() == 1) {
             return new MerkleLeaf(items.stream().findFirst().get(), depth, hasher);
         } else {

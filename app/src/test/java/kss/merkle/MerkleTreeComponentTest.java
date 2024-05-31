@@ -23,14 +23,15 @@ public class MerkleTreeComponentTest {
             "0x32c82baa", "0x57735a17", "0x6197a3c9", "0x2b6b03da"
     );
 
-    private final static List<MerkleProofItem> PROOF_FOR_ITEM_FOUR_IN_TREE_DATA = List.of(
+    private final static String FOURTH_LEAF_OF_THE_TREE = TREE_DATA.get(3);
+    private final static List<MerkleProofItem> PROOF_FOR_FOURTH_LEAF_OF_THE_TREE = List.of(
             new MerkleProofItem.Right(BaseEncoding.base16().lowerCase().decode("900a49e2dad814fdcca81adcab818ebbec5055804a10e3a6e504c27cbce35a03")),
             new MerkleProofItem.Right(BaseEncoding.base16().lowerCase().decode("71d210f1b10b051e906e103b2a5fb37bceca8e19c3b744dc4fc3ec2ef52eaca8")),
             new MerkleProofItem.Left(BaseEncoding.base16().lowerCase().decode("dcd335636aa27edf14b8e693c1d76830833e13ecdf464a948a1c70b5a0e84388")),
             new MerkleProofItem.Left(BaseEncoding.base16().lowerCase().decode("c260b4d9de200760299f1d774fb05e0a17f0a108f3db91d3f13c9686e5bc89ce"))
     );
 
-    private final static String SOME_INVALID_ITEM = "0xdeadbeef";
+    private final static String SOME_NEW_ITEM = "0xdeadbeef";
 
     @Test
     public void shouldCreateTreeFromList() throws MerkleException {
@@ -76,8 +77,7 @@ public class MerkleTreeComponentTest {
     @Test
     public void shouldGenerateProof() throws MerkleException {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
-        String item = TREE_DATA.get(3); // 0x72c04a10
-        List<MerkleProofItem> proof = tree.generateProof(item);
+        List<MerkleProofItem> proof = tree.generateProof(FOURTH_LEAF_OF_THE_TREE);
 
         // path to the correct leaf is: Left, Left, Right, Right. we need hashes for opposite nodes
         // this is illustrated in MerkleTreeTest-tree.pdf in test/resources dir
@@ -95,7 +95,7 @@ public class MerkleTreeComponentTest {
     public void shouldThrowExceptionWhenGeneratingProofForInvalidItem() throws MerkleException {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
 
-        assertThatThrownBy(() -> tree.generateProof(SOME_INVALID_ITEM))
+        assertThatThrownBy(() -> tree.generateProof(SOME_NEW_ITEM))
                 .isInstanceOf(MerkleException.class)
                 .hasMessage("Item not found in the tree")
         ;
@@ -104,14 +104,37 @@ public class MerkleTreeComponentTest {
     @Test
     public void shouldVerifyProof() throws MerkleException {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
-        String item = TREE_DATA.get(3); // 0x72c04a10
-        assertThat(tree.verifyProof(item, new ArrayList<>(PROOF_FOR_ITEM_FOUR_IN_TREE_DATA))).isTrue();
+        assertThat(tree.verifyProof(FOURTH_LEAF_OF_THE_TREE, new ArrayList<>(PROOF_FOR_FOURTH_LEAF_OF_THE_TREE))).isTrue();
     }
 
     @Test
     public void shouldNotVerifyProofForInvalidItem() throws MerkleException {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
-        assertThat(tree.verifyProof(SOME_INVALID_ITEM, new ArrayList<>(PROOF_FOR_ITEM_FOUR_IN_TREE_DATA))).isFalse();
-        assertThat(tree.verifyProof(TREE_DATA.getFirst(), new ArrayList<>(PROOF_FOR_ITEM_FOUR_IN_TREE_DATA))).isFalse();
+        assertThat(tree.verifyProof(SOME_NEW_ITEM, new ArrayList<>(PROOF_FOR_FOURTH_LEAF_OF_THE_TREE))).isFalse();
+        assertThat(tree.verifyProof(TREE_DATA.getFirst(), new ArrayList<>(PROOF_FOR_FOURTH_LEAF_OF_THE_TREE))).isFalse();
+    }
+
+    @Test
+    public void shouldUpdateLeaf() throws MerkleException {
+        MerkleTree tree = MerkleTree.fromList(TREE_DATA);
+        List<MerkleProofItem> proof = tree.generateProof(FOURTH_LEAF_OF_THE_TREE);
+
+        assertThat(tree.verifyProof(FOURTH_LEAF_OF_THE_TREE, new ArrayList<>(proof))).isTrue();
+
+        tree.updateLeaf(FOURTH_LEAF_OF_THE_TREE, SOME_NEW_ITEM);
+        List<MerkleProofItem> newProof = tree.generateProof(SOME_NEW_ITEM);
+
+        assertThat(tree.verifyProof(FOURTH_LEAF_OF_THE_TREE, new ArrayList<>(proof))).isFalse();
+        assertThat(tree.verifyProof(SOME_NEW_ITEM, new ArrayList<>(newProof))).isTrue();
+    }
+
+    @Test
+    public void shouldNotUpdateLeafIfItIsNotFound() throws MerkleException {
+        MerkleTree tree = MerkleTree.fromList(TREE_DATA);
+
+        assertThatThrownBy(() -> tree.updateLeaf(SOME_NEW_ITEM, null))
+                .isInstanceOf(MerkleException.class)
+                .hasMessage(String.format("Element %s was not found in a tree", SOME_NEW_ITEM))
+        ;
     }
 }
