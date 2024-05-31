@@ -18,7 +18,7 @@ public class App {
     }
 
     public static void main(String[] args) {
-        final var treeSize = 111;
+        final var treeSize = 16;
         Random rand = new Random();
         List<String> randomHexStrings = IntStream.generate(() -> rand.nextInt(Integer.MAX_VALUE)).limit(treeSize)
                 .mapToObj(i -> String.format("0x%08x", i)).toList();

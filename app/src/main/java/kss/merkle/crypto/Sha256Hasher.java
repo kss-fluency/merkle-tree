@@ -3,10 +3,10 @@ package kss.merkle.crypto;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Sha256Hasher {
-    static MessageDigest messageDigest;
+public class Sha256Hasher implements Hasher {
+    private final MessageDigest messageDigest;
 
-    static {
+    public Sha256Hasher() {
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -14,7 +14,7 @@ public class Sha256Hasher {
         }
     }
 
-    public static byte[] hash(byte[] input) {
+    public byte[] hash(byte[] input) {
         messageDigest.update(input);
         return messageDigest.digest();
     }

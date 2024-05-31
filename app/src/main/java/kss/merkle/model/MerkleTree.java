@@ -3,17 +3,21 @@ package kss.merkle.model;
 import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
+import kss.merkle.crypto.Hasher;
 import kss.merkle.crypto.Sha256Hasher;
 import kss.merkle.exception.MerkleException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class MerkleTree {
-    private MerkleNode root;
-    private Integer size;
+    private final MerkleNode root;
+    private final Integer size;
+    private final static Hasher hasher = new Sha256Hasher();
 
     public static MerkleTree fromList(List<String> items) throws MerkleException {
         if (!isPowerOfTwo(items.size())) {
@@ -24,7 +28,7 @@ public class MerkleTree {
     }
 
     public boolean verifyProof(String item, List<MerkleProofItem> proof) {
-        byte[] itemHash = Sha256Hasher.hash(item.getBytes());
+        byte[] itemHash = hasher.hash(item.getBytes());
 
         byte[] calculatedRootHash = recursiveVerifyProof(root, itemHash, proof);
 
@@ -32,7 +36,7 @@ public class MerkleTree {
     }
 
     public List<MerkleProofItem> generateProof(String item) throws MerkleException {
-        byte[] itemHash = Sha256Hasher.hash(item.getBytes());
+        byte[] itemHash = hasher.hash(item.getBytes());
 
         Optional<List<MerkleProofItem>> proof = recursiveGenerateProof(root, itemHash, Collections.emptyList());
         if (proof.isEmpty()) {
@@ -73,9 +77,9 @@ public class MerkleTree {
             MerkleProofItem firstProofItem = hashes.removeFirst();
 
             if (firstProofItem instanceof MerkleProofItem.Left l) {
-                result = Sha256Hasher.hash(Bytes.concat(l.getHash(), recursiveVerifyProof(item.getRight(), itemHash, hashes)));
+                result = hasher.hash(Bytes.concat(l.getHash(), recursiveVerifyProof(item.getRight(), itemHash, hashes)));
             } else if (firstProofItem instanceof MerkleProofItem.Right r) {
-                result = Sha256Hasher.hash(Bytes.concat(recursiveVerifyProof(item.getLeft(), itemHash, hashes), r.getHash()));
+                result = hasher.hash(Bytes.concat(recursiveVerifyProof(item.getLeft(), itemHash, hashes), r.getHash()));
             }
         }
 
@@ -84,13 +88,13 @@ public class MerkleTree {
 
     private static MerkleNode createNode(List<String> items, Integer depth) {
         if (items.size() == 1) {
-            return new MerkleLeaf(items.stream().findFirst().get(), depth);
+            return new MerkleLeaf(items.stream().findFirst().get(), depth, hasher);
         } else {
             var divided = Lists.partition(items, items.size() / 2);
             var left = createNode(divided.getFirst(), depth + 1);
             var right = createNode(divided.getLast(), depth + 1);
 
-            return new MerkleNode(left, right, depth);
+            return new MerkleNode(left, right, depth, hasher);
         }
     }
 

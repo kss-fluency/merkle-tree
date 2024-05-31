@@ -2,7 +2,7 @@ package kss.merkle.model;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
-import kss.merkle.crypto.Sha256Hasher;
+import kss.merkle.crypto.Hasher;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,12 +15,16 @@ public class MerkleNode {
     private MerkleNode right;
     private Integer depth;
 
-    public MerkleNode() {
+    protected final Hasher hasher;
+
+    public MerkleNode(Hasher hasher) {
+        this.hasher = hasher;
     }
 
-    public MerkleNode(MerkleNode left, MerkleNode right, Integer depth) {
+    public MerkleNode(MerkleNode left, MerkleNode right, Integer depth, Hasher hasher) {
+        this(hasher);
         this.depth = depth;
-        this.hash = Sha256Hasher.hash(Bytes.concat(left.hash, right.hash));
+        this.hash = hasher.hash(Bytes.concat(left.hash, right.hash));
         this.left = left;
         this.right = right;
     }
