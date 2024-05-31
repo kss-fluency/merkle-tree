@@ -78,7 +78,6 @@ public class MerkleTreeComponentTest {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
         String item = TREE_DATA.get(3); // 0x72c04a10
         List<MerkleProofItem> proof = tree.generateProof(item);
-        System.out.println(proof);
 
         // path to the correct leaf is: Left, Left, Right, Right. we need hashes for opposite nodes
         // this is illustrated in MerkleTreeTest-tree.pdf in test/resources dir
