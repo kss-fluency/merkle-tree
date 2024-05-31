@@ -10,7 +10,7 @@ public interface MerkleProofItem {
 
     @AllArgsConstructor
     @Getter
-    class Left implements MerkleProofItem {
+    final class Left implements MerkleProofItem {
         private final byte[] hash;
 
         @Override
@@ -21,7 +21,7 @@ public interface MerkleProofItem {
 
     @AllArgsConstructor
     @Getter
-    class Right implements MerkleProofItem {
+    final class Right implements MerkleProofItem {
         private final byte[] hash;
 
         @Override

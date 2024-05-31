@@ -27,10 +27,26 @@ public class MerkleTree {
         return new MerkleTree(createNode(items, 0), items.size());
     }
 
+    public void updateLeaf(String oldLeaf, String newLeaf) throws MerkleException {
+        Optional<List<MerkleProofItem>> optionalPath = generatePath(root, oldLeaf, new ArrayList<>());
+        if (optionalPath.isEmpty()) {
+            throw new MerkleException(String.format("Element %s was not found in a tree", oldLeaf));
+        }
+
+        List<MerkleProofItem> path = optionalPath.get();
+
+        do {
+            updateHashOrData(path, newLeaf);
+            path.removeLast();
+        } while (!path.isEmpty());
+
+        root.updateHash();
+    }
+
     public boolean verifyProof(String item, List<MerkleProofItem> proof) {
         byte[] itemHash = hasher.hash(item.getBytes());
 
-        byte[] calculatedRootHash = recursiveVerifyProof(root, itemHash, proof);
+        byte[] calculatedRootHash = recursiveVerifyProof(root, itemHash, new ArrayList<>(proof));
 
         return Arrays.equals(calculatedRootHash, root.hash);
     }
@@ -84,6 +100,44 @@ public class MerkleTree {
         }
 
         return result;
+    }
+
+    private Optional<List<MerkleProofItem>> generatePath(MerkleNode node, String oldLeaf, List<MerkleProofItem> path) {
+        if (node instanceof MerkleLeaf leaf) {
+            if (leaf.getData().equals(oldLeaf)) {
+                return Optional.of(path);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            var leftPath = new ArrayList<>(path);
+            leftPath.addLast(new MerkleProofItem.Left(null));
+            var left = generatePath(node.getLeft(), oldLeaf, leftPath);
+            var rightPath = new ArrayList<>(path);
+            rightPath.addLast(new MerkleProofItem.Right(null));
+            var right = generatePath(node.getRight(), oldLeaf, rightPath);
+
+            return left.isPresent() ? left : right;
+        }
+    }
+
+    private void updateHashOrData(List<MerkleProofItem> path, String newLeaf) throws MerkleException {
+        MerkleNode node = root;
+
+        for (MerkleProofItem merkleProofItem : path) {
+            if (merkleProofItem instanceof MerkleProofItem.Left) {
+                node = node.getLeft();
+            } else if (merkleProofItem instanceof MerkleProofItem.Right) {
+                node = node.getRight();
+            } else {
+                throw new MerkleException("Unexpected Merkle Tree path type. Should never happen!");
+            }
+        }
+        if (node instanceof MerkleLeaf leaf) {
+            leaf.updateData(newLeaf);
+        } else {
+            node.updateHash();
+        }
     }
 
     private static MerkleNode createNode(List<String> items, Integer depth) {

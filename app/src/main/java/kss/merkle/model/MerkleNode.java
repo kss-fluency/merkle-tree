@@ -24,9 +24,13 @@ public class MerkleNode {
     public MerkleNode(MerkleNode left, MerkleNode right, Integer depth, Hasher hasher) {
         this(hasher);
         this.depth = depth;
-        this.hash = hasher.hash(Bytes.concat(left.hash, right.hash));
         this.left = left;
         this.right = right;
+        updateHash();
+    }
+
+    public void updateHash() {
+        this.hash = hasher.hash(Bytes.concat(left.hash, right.hash));
     }
 
     @Override

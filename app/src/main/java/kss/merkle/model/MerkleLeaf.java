@@ -6,12 +6,16 @@ import lombok.Getter;
 
 @Getter
 public class MerkleLeaf extends MerkleNode {
-    private final String data;
+    private String data;
 
     public MerkleLeaf(String data, Integer depth, Hasher hasher) {
         super(hasher);
-        this.data = data;
         this.depth = depth;
+        updateData(data);
+    }
+
+    public void updateData(String data) {
+        this.data = data;
         this.hash = hasher.hash(data.getBytes());
     }
 

@@ -14,10 +14,6 @@ import java.util.stream.IntStream;
 
 @Slf4j
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
         final var treeSize = 16;
         Random rand = new Random();
@@ -28,13 +24,21 @@ public class App {
 
         try {
             MerkleTree tree = MerkleTree.fromList(randomHexStrings);
-            System.out.println(tree);
+            System.out.println("Tree generated: " + tree);
 
             String item = randomHexStrings.get(7);
             List<MerkleProofItem> proof = tree.generateProof(item);
-            System.out.println("Proof: " + proof);
+            System.out.println("Proof generated: " + proof);
 
             System.out.println("Proof verified: " + tree.verifyProof(item, proof));
+
+            String newRandomHexString = String.format("0x%08x", rand.nextInt(Integer.MAX_VALUE));
+            tree.updateLeaf(item, newRandomHexString);
+            System.out.println("Leaf number 8 was updated to " + newRandomHexString);
+            System.out.println("Updated tree: " + tree);
+            System.out.println("Verify proof for old item: " + tree.verifyProof(item, proof));
+            List<MerkleProofItem> newProof = tree.generateProof(newRandomHexString);
+            System.out.println("Verify proof for new item: " + tree.verifyProof(newRandomHexString, newProof));
         } catch (MerkleException e) {
             log.error("Creating Merkle Tree failed!", e);
         }

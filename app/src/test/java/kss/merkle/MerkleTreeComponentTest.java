@@ -112,5 +112,6 @@ public class MerkleTreeComponentTest {
     public void shouldNotVerifyProofForInvalidItem() throws MerkleException {
         MerkleTree tree = MerkleTree.fromList(TREE_DATA);
         assertThat(tree.verifyProof(SOME_INVALID_ITEM, new ArrayList<>(PROOF_FOR_ITEM_FOUR_IN_TREE_DATA))).isFalse();
+        assertThat(tree.verifyProof(TREE_DATA.getFirst(), new ArrayList<>(PROOF_FOR_ITEM_FOUR_IN_TREE_DATA))).isFalse();
     }
 }
