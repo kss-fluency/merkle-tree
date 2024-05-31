@@ -3,6 +3,7 @@ package kss.merkle.model;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
 import kss.merkle.crypto.Hasher;
+import kss.merkle.exception.MerkleException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +22,7 @@ public class MerkleNode {
         this.hasher = hasher;
     }
 
-    public MerkleNode(MerkleNode left, MerkleNode right, Integer depth, Hasher hasher) {
+    public MerkleNode(MerkleNode left, MerkleNode right, Integer depth, Hasher hasher) throws MerkleException {
         this(hasher);
         this.depth = depth;
         this.left = left;
@@ -29,7 +30,7 @@ public class MerkleNode {
         updateHash();
     }
 
-    public void updateHash() {
+    public void updateHash() throws MerkleException {
         this.hash = hasher.hash(Bytes.concat(left.hash, right.hash));
     }
 

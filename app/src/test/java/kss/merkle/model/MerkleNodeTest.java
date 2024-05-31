@@ -38,7 +38,7 @@ public class MerkleNodeTest {
     }
 
     @Test
-    public void shouldCreateNodeAndHashData() {
+    public void shouldCreateNodeAndHashData() throws MerkleException {
         MerkleNode node = new MerkleNode(SOME_NODE, SOME_OTHER_NODE, SOME_DEPTH, mockHasher);
 
         assertThat(node.getDepth()).isEqualTo(SOME_DEPTH);
@@ -48,7 +48,7 @@ public class MerkleNodeTest {
     }
 
     @Test
-    public void shouldUpdateHash() {
+    public void shouldUpdateHash() throws MerkleException {
         MerkleNode node = new MerkleNode(SOME_NODE, SOME_OTHER_NODE, SOME_DEPTH, mockHasher);
         assertThat(node.getHash()).isEqualTo(SOME_HASH);
 

@@ -24,6 +24,11 @@ public class MerkleLeaf extends MerkleNode {
     }
 
     @Override
+    public void updateHash() throws MerkleException {
+        throw new MerkleException("There is no need to update hash unless you update data. use MerkleLeaf.updateData if you would like to do that.");
+    }
+
+    @Override
     public String toString() {
         return "--".repeat(Math.max(0, depth)) +
                 String.format("MerkleLeaf{ hash=[%s] data=[%s] }\n", BaseEncoding.base16().lowerCase().encode(hash), data);

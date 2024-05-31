@@ -62,4 +62,14 @@ public class MerkleLeafTest {
         assertThat(node.getData()).isEqualTo(SOME_OTHER_DATA);
         assertThat(node.getHash()).isEqualTo(SOME_OTHER_HASH);
     }
+
+    @Test
+    public void shouldNotUpdateHash() throws MerkleException {
+        MerkleLeaf node = new MerkleLeaf(SOME_DATA, SOME_DEPTH, mockHasher);
+
+        assertThatThrownBy(node::updateHash)
+                .isInstanceOf(MerkleException.class)
+                .hasMessage("There is no need to update hash unless you update data. use MerkleLeaf.updateData if you would like to do that.")
+        ;
+    }
 }

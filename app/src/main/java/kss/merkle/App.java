@@ -24,21 +24,21 @@ public class App {
 
         try {
             MerkleTree tree = MerkleTree.fromList(randomHexStrings);
-            System.out.println("Tree generated: " + tree);
+            log.info("Tree generated: {}", tree);
 
             String item = randomHexStrings.get(7);
             List<MerkleProofItem> proof = tree.generateProof(item);
-            System.out.println("Proof generated: " + proof);
+            log.info("Proof generated: {}", proof);
 
-            System.out.println("Proof verified: " + tree.verifyProof(item, proof));
+            log.info("Proof verified: {}", tree.verifyProof(item, proof));
 
             String newRandomHexString = String.format("0x%08x", rand.nextInt(Integer.MAX_VALUE));
             tree.updateLeaf(item, newRandomHexString);
-            System.out.println("Leaf number 8 was updated to " + newRandomHexString);
-            System.out.println("Updated tree: " + tree);
-            System.out.println("Verify proof for old item: " + tree.verifyProof(item, proof));
+            log.info("Leaf number 8 was updated to {}", newRandomHexString);
+            log.info("Updated tree: {}", tree);
+            log.info("Verify proof for old item: {}", tree.verifyProof(item, proof));
             List<MerkleProofItem> newProof = tree.generateProof(newRandomHexString);
-            System.out.println("Verify proof for new item: " + tree.verifyProof(newRandomHexString, newProof));
+            log.info("Verify proof for new item: {}", tree.verifyProof(newRandomHexString, newProof));
         } catch (MerkleException e) {
             log.error("There was an oopsie!", e);
         }
