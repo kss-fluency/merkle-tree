@@ -4,6 +4,7 @@
 package kss.merkle;
 
 import kss.merkle.exception.MerkleException;
+import kss.merkle.model.MerkleProofItem;
 import kss.merkle.model.MerkleTree;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,12 @@ public class App {
         try {
             MerkleTree tree = MerkleTree.fromList(randomHexStrings);
             System.out.println(tree);
+
+            String item = randomHexStrings.get(7);
+            List<MerkleProofItem> proof = tree.generateProof(item);
+            System.out.println("Proof: " + proof);
+
+//            System.out.println("Proof verified: " + tree.verifyProof(item, proof));
         } catch (MerkleException e) {
             log.error("Creating Merkle Tree failed!", e);
         }

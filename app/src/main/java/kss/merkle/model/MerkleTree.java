@@ -55,11 +55,11 @@ public class MerkleTree {
             }
         } else {
             List<MerkleProofItem> leftProof = new ArrayList<>(proof);
-            leftProof.addFirst(new MerkleProofItem.Right(node.getRight().hash));
+            leftProof.addLast(new MerkleProofItem.Right(node.getRight().hash));
             Optional<List<MerkleProofItem>> left = recursiveGenerateProof(node.getLeft(), itemHash, leftProof);
 
             List<MerkleProofItem> rightProof = new ArrayList<>(proof);
-            rightProof.addFirst(new MerkleProofItem.Left(node.getLeft().hash));
+            rightProof.addLast(new MerkleProofItem.Left(node.getLeft().hash));
             Optional<List<MerkleProofItem>> right = recursiveGenerateProof(node.getRight(), itemHash, rightProof);
 
             return left.isPresent() ? left : right;

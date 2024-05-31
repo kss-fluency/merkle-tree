@@ -5,6 +5,8 @@ import lombok.Getter;
 
 public interface MerkleProofItem {
 
+    byte[] getHash();
+
     @AllArgsConstructor
     @Getter
     class Left implements MerkleProofItem {

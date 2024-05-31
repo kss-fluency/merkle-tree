@@ -1,6 +1,10 @@
-package kss.merkle.model;
+package kss.merkle;
 
 import kss.merkle.exception.MerkleException;
+import kss.merkle.model.MerkleLeaf;
+import kss.merkle.model.MerkleNode;
+import kss.merkle.model.MerkleProofItem;
+import kss.merkle.model.MerkleTree;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -45,7 +49,7 @@ public class MerkleTreeTest {
             assertThat(node.getDepth()).isEqualTo(i++);
         } while (!(node instanceof MerkleLeaf));
 
-        assertThat((double)i).isEqualTo(Math.sqrt(SOME_TREE_DATA.size()) + 1);
+        assertThat((double) i).isEqualTo(Math.sqrt(SOME_TREE_DATA.size()) + 1);
     }
 
     @Test
@@ -57,5 +61,23 @@ public class MerkleTreeTest {
                 .isInstanceOf(MerkleException.class)
                 .hasMessage(String.format("Merkle Tree can only be built using n^2 items but you provided %d", invalidTree.size()))
         ;
+    }
+
+    @Test
+    public void shouldGenerateProof() throws MerkleException {
+        MerkleTree tree = MerkleTree.fromList(SOME_TREE_DATA);
+        String item = SOME_TREE_DATA.get(3); // 0x72c04a10
+        List<MerkleProofItem> proof = tree.generateProof(item);
+
+        // path to the correct leaf is: Left, Left, Right, Right. we need hashes for opposite nodes
+        // this is illustrated in tree.pdf in test/resources dir
+        assertThat(proof.getFirst()).isInstanceOf(MerkleProofItem.Right.class);
+        assertThat(proof.getFirst().getHash()).isEqualTo(tree.getRoot().getRight().getHash());
+        assertThat(proof.get(1)).isInstanceOf(MerkleProofItem.Right.class);
+        assertThat(proof.get(1).getHash()).isEqualTo(tree.getRoot().getLeft().getRight().getHash());
+        assertThat(proof.get(2)).isInstanceOf(MerkleProofItem.Left.class);
+        assertThat(proof.get(2).getHash()).isEqualTo(tree.getRoot().getLeft().getLeft().getLeft().getHash());
+        assertThat(proof.get(3)).isInstanceOf(MerkleProofItem.Left.class);
+        assertThat(proof.get(3).getHash()).isEqualTo(tree.getRoot().getLeft().getLeft().getRight().getLeft().getHash());
     }
 }
